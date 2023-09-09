@@ -59,22 +59,27 @@ class _ChatScreenState extends State<ChatScreen> {
                 border: InputBorder.none,
               ),
               style: const TextStyle(color: Colors.white),
+              onSubmitted: (text) {
+                _sendMessage();
+              },
             ),
           ),
           IconButton(
             icon: const Icon(Icons.send, color: Colors.lightBlueAccent),
-            onPressed: () {
-              if (_textController.text.isNotEmpty) {
-                setState(() {
-                  messages.add(_textController.text);
-                });
-                _textController.clear();
-                // TODO: Send the message to ChatGPT
-              }
-            },
+            onPressed: _sendMessage,
           ),
         ],
       ),
     );
+  }
+
+  void _sendMessage() {
+    if (_textController.text.isNotEmpty) {
+      setState(() {
+        messages.add(_textController.text);
+      });
+      _textController.clear();
+      // TODO: Send the message to ChatGPT
+    }
   }
 }
