@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motivation_couch/widgets/chat_message.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -14,7 +15,12 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Motivation Couch')),
+      appBar: AppBar(
+        title: const Text('Motivation Couch'),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: Colors.blueGrey.shade900,
+      ),
       body: Column(
         children: [
           Expanded(child: _buildMessageList()),
@@ -28,26 +34,36 @@ class _ChatScreenState extends State<ChatScreen> {
     return ListView.builder(
       itemCount: messages.length,
       itemBuilder: (context, index) {
-        return ListTile(title: Text(messages[index]));
+        return ChatMessage(text: messages[index], isUser: true);
       },
     );
   }
 
   Widget _buildInputField() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      decoration: BoxDecoration(
+        color: Colors.blueGrey.shade700,
+        border: Border(
+          top: BorderSide(color: Colors.blueGrey.shade500, width: 2.0),
+        ),
+      ),
       child: Row(
         children: [
           Expanded(
             child: TextField(
               controller: _textController,
-              decoration: const InputDecoration(hintText: "Type your message..."),
+              decoration: InputDecoration(
+                hintText: "Type your message...",
+                hintStyle: TextStyle(color: Colors.blueGrey.shade300),
+                border: InputBorder.none,
+              ),
+              style: const TextStyle(color: Colors.white),
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.send),
+            icon: const Icon(Icons.send, color: Colors.lightBlueAccent),
             onPressed: () {
-              // TODO: Handle send message
               if (_textController.text.isNotEmpty) {
                 setState(() {
                   messages.add(_textController.text);
