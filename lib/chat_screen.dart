@@ -13,7 +13,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isLoading = false;
   final _openAIService = OpenAIService();
   final TextEditingController _textController = TextEditingController();
-  final List<String> messages = [];
+  final List<Message> messages = [];
 
   @override
   Widget build(BuildContext context) {
@@ -35,10 +35,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList() {
     return ListView.builder(
-      itemCount: messages.length + (_isLoading ? 1 : 0), // Add one more space for the loader
+      itemCount: messages.length + (_isLoading ? 1 : 0),
       itemBuilder: (context, index) {
         if (index < messages.length) {
-          return ChatMessage(text: messages[index], isUser: true);
+          return ChatMessage(message: messages[index]);
         } else {
           return const Center(child: CircularProgressIndicator());
         }
@@ -84,7 +84,7 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_textController.text.isNotEmpty) {
       final userMessage = _textController.text;
       setState(() {
-        messages.add(userMessage);
+        messages.add(Message(text: userMessage, isUser: true));
         _isLoading = true; // Start loading
       });
       _textController.clear();
@@ -92,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
       try {
         final chatGPTResponse = await _openAIService.getResponse(userMessage);
         setState(() {
-          messages.add(chatGPTResponse);
+          messages.add(Message(text: chatGPTResponse, isUser: false));
           _isLoading = false; // Stop loading
         });
       } catch (error) {
@@ -114,4 +114,11 @@ class _ChatScreenState extends State<ChatScreen> {
       }
     }
   }
+}
+
+class Message {
+  final String text;
+  final bool isUser;
+
+  Message({required this.text, this.isUser = false});
 }
