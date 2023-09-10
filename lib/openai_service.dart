@@ -15,7 +15,7 @@ class OpenAIService {
       },
       body: jsonEncode({
         'messages': [
-          {"role": "system", "content": "You are a motivation coach. $prompt"},
+          {"role": "system", "content": "You are a motivation coach."},
           {"role": "user", "content": prompt},
         ],
         'max_tokens': 150, // You can adjust this as needed.
