@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:motivation_couch/openai_service.dart';
 import 'package:motivation_couch/widgets/chat_message.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -9,6 +10,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  bool _isLoading = false;
+  final _openAIService = OpenAIService();
   final TextEditingController _textController = TextEditingController();
   final List<String> messages = [];
 
@@ -32,9 +35,13 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList() {
     return ListView.builder(
-      itemCount: messages.length,
+      itemCount: messages.length + (_isLoading ? 1 : 0), // Add one more space for the loader
       itemBuilder: (context, index) {
-        return ChatMessage(text: messages[index], isUser: true);
+        if (index < messages.length) {
+          return ChatMessage(text: messages[index], isUser: true);
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
       },
     );
   }
@@ -73,13 +80,38 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _sendMessage() {
+  void _sendMessage() async {
     if (_textController.text.isNotEmpty) {
+      final userMessage = _textController.text;
       setState(() {
-        messages.add(_textController.text);
+        messages.add(userMessage);
+        _isLoading = true; // Start loading
       });
       _textController.clear();
-      // TODO: Send the message to ChatGPT
+
+      try {
+        final chatGPTResponse = await _openAIService.getResponse(userMessage);
+        setState(() {
+          messages.add(chatGPTResponse);
+          _isLoading = false; // Stop loading
+        });
+      } catch (error) {
+        setState(() {
+          _isLoading = false; // Stop loading
+        });
+        // Handle the error in the next step
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Failed to fetch response from OpenAI'),
+            action: SnackBarAction(
+              label: 'RETRY',
+              onPressed: () {
+                _sendMessage();
+              },
+            ),
+          ),
+        );
+      }
     }
   }
 }
