@@ -6,7 +6,7 @@ class OpenAIService {
   final String _apiKey =
       ''; // Replace with your key, but consider a more secure method.
 
-  Future<String> getResponse(String prompt) async {
+  Future<String> getResponse({required String prompt}) async {
     final response = await http.post(
       Uri.parse(_apiEndpoint),
       headers: {

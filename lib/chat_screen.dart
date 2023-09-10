@@ -1,4 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:motivation_couch/bloc/chat_bloc.dart';
 import 'package:motivation_couch/openai_service.dart';
 import 'package:motivation_couch/widgets/chat_message.dart';
 
@@ -10,39 +13,70 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  bool _isLoading = false;
-  final _openAIService = OpenAIService();
   final TextEditingController _textController = TextEditingController();
+  late ChatBloc _chatBloc;
   final List<Message> messages = [];
 
   @override
+  void initState() {
+    super.initState();
+    _chatBloc = ChatBloc(OpenAIService());
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Motivation Couch'),
-        centerTitle: true,
-        elevation: 0,
-        backgroundColor: Colors.blueGrey.shade900,
-      ),
-      body: Column(
-        children: [
-          Expanded(child: _buildMessageList()),
-          _buildInputField(),
-        ],
+    return BlocProvider(
+      create: (context) => _chatBloc,
+      child: BlocConsumer<ChatBloc, ChatState>(
+        listener: (context, state) {
+          if (state.status == ChatStatus.error) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage ?? 'An error occurred')),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Motivation Couch'),
+              centerTitle: true,
+              elevation: 0,
+              backgroundColor: Colors.blueGrey.shade900,
+            ),
+            body: Column(
+              children: [
+                Expanded(child: _buildMessageList(state)),
+                _buildInputField(),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget _buildMessageList() {
-    return ListView.builder(
-      itemCount: messages.length + (_isLoading ? 1 : 0),
-      itemBuilder: (context, index) {
-        if (index < messages.length) {
-          return ChatMessage(message: messages[index]);
-        } else {
-          return const Center(child: CircularProgressIndicator());
-        }
-      },
+  Widget _buildMessageList(ChatState state) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: state.messages.length,
+            itemBuilder: (context, index) {
+              return ChatMessage(message: state.messages[index]);
+            },
+          ),
+        ),
+        if (state.status == ChatStatus.loading)
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: CircularProgressIndicator(),
+          ),
+        if (state.status == ChatStatus.error)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(state.errorMessage ?? 'An error occurred'),
+          ),
+      ],
     );
   }
 
@@ -80,45 +114,21 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  void _sendMessage() async {
-    if (_textController.text.isNotEmpty) {
-      final userMessage = _textController.text;
-      setState(() {
-        messages.add(Message(text: userMessage, isUser: true));
-        _isLoading = true; // Start loading
-      });
+  void _sendMessage() {
+    final text = _textController.text;
+    if (text.isNotEmpty) {
+      _chatBloc.add(SendMessage(text));
       _textController.clear();
-
-      try {
-        final chatGPTResponse = await _openAIService.getResponse(userMessage);
-        setState(() {
-          messages.add(Message(text: chatGPTResponse, isUser: false));
-          _isLoading = false; // Stop loading
-        });
-      } catch (error) {
-        setState(() {
-          _isLoading = false; // Stop loading
-        });
-        // Handle the error in the next step
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Failed to fetch response from OpenAI'),
-            action: SnackBarAction(
-              label: 'RETRY',
-              onPressed: () {
-                _sendMessage();
-              },
-            ),
-          ),
-        );
-      }
     }
   }
 }
 
-class Message {
+class Message extends Equatable {
   final String text;
   final bool isUser;
 
-  Message({required this.text, this.isUser = false});
+  const Message({required this.text, this.isUser = false});
+
+  @override
+  List<Object?> get props => [text, isUser];
 }
