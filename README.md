@@ -1,16 +1,43 @@
-# motivation_couch
+# Motivation Couch
 
-A new Flutter project.
+Motivation Couch is a Flutter application that leverages the power of OpenAI's ChatGPT to act as a motivational coach. Whether you need a boost of motivation, some words of encouragement, or just someone (or something) to talk to, Motivation Couch is here for you.
+
+![App Screenshot](screenshots/demo.png)
+
+## Features
+
+- **Interactive Chat**: Engage in a conversation with ChatGPT.
+- **Dark Mode**: A sleek, modern dark-themed UI.
+- **Responsive**: Works seamlessly on both mobile and web.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+1. **Clone the Repository**:
+git clone https://github.com/AviadKa/motivation_couch.git
+cd motivation_couch
 
-A few resources to get you started if this is your first Flutter project:
+2. **Update the OpenAI API Key**:
+Before you can interact with OpenAI's ChatGPT, you need to update the `_apiKey` inside `openai_service.dart` with your own OpenAI API key.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+3. **Install Dependencies**:
+flutter pub get
+4. **Run the App**:
+flutter run
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## How It Was Built
+
+This application was built with the help of OpenAI's ChatGPT. The entire development process, from ideation to implementation, was documented in a conversation with ChatGPT. You can find the detailed conversation [here](https://chat.openai.com/share/f69d4023-fd39-456f-845e-bb04e3b0b302).
+
+## Dependencies
+
+- [Flutter](https://flutter.dev/)
+- [OpenAI](https://www.openai.com/)
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
+
