@@ -1,6 +1,6 @@
-# Motivation Couch
+# Motivation Coach
 
-Motivation Couch is a Flutter application that leverages the power of OpenAI's ChatGPT to act as a motivational coach. Whether you need a boost of motivation, some words of encouragement, or just someone (or something) to talk to, Motivation Couch is here for you.
+Motivation Coach is a Flutter application that leverages the power of OpenAI's ChatGPT to act as a motivational coach. Whether you need a boost of motivation, some words of encouragement, or just someone (or something) to talk to, Motivation Coach is here for you.
 
 ![App Screenshot](screenshots/demo.png)
 
@@ -13,8 +13,8 @@ Motivation Couch is a Flutter application that leverages the power of OpenAI's C
 ## Getting Started
 
 1. **Clone the Repository**:
-git clone https://github.com/AviadKa/motivation_couch.git
-cd motivation_couch
+git clone https://github.com/AviadKa/motivation_coach.git
+cd motivation_coach
 
 2. **Update the OpenAI API Key**:
 Before you can interact with OpenAI's ChatGPT, you need to update the `_apiKey` inside `openai_service.dart` with your own OpenAI API key.
